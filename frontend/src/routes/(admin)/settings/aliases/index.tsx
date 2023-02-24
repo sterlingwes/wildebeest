@@ -6,7 +6,7 @@ export const loader = loader$(({ redirect }) => {
 })
 
 export default component$(() => {
-	loader.use()
+	loader()
 
 	return (
 		<div class="max-w-4xl py-14 px-8">
