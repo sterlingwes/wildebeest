@@ -1,12 +1,27 @@
-name: Deploy
+name: Migrate
 on:
   push:
   repository_dispatch:
 jobs:
-  deploy:
+  migrate:
     runs-on: ubuntu-latest
     timeout-minutes: 60
     steps:
+      # this is needed to get the lowercase version of the repository_owner name
+      # and being able to override the suffix when mutliple instances are hosted
+      # by the same GitHub account.
+      - name: Set name suffix
+        run: |
+          if [ -z "$OVERRIDE_NAME_SUFFIX" ]
+          then
+              echo $GH_OWNER | awk '{ print "NAME_SUFFIX=" tolower($0) }' >> ${GITHUB_ENV}
+          else
+              echo $OVERRIDE_NAME_SUFFIX | awk '{ print "NAME_SUFFIX=" tolower($0) }' >> ${GITHUB_ENV}
+          fi
+        env:
+          GH_OWNER: ${{ github.repository_owner }}
+          OVERRIDE_NAME_SUFFIX: ${{ vars.OVERRIDE_NAME_SUFFIX }}
+
       - uses: actions/checkout@v2
 
       - name: retrieve D1 database
