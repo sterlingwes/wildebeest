@@ -27,8 +27,8 @@ export default component$(() => {
 			</div> */}
 			<div class="overlay" id="overlay_overlay"></div>
 			<div class="title">
-				<div>dingus</div>
-				<div>business</div>
+				<div class="dingus">dingus</div>
+				<div class="biz">business</div>
 			</div>
 		</div>
 	)

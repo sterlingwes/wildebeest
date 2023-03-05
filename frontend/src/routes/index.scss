@@ -1,4 +1,11 @@
+@font-face {
+	font-family: 'Smooch';
+	src: local('Smooch'), url('Smooch-Regular.ttf') format('opentype');
+}
+
 .title {
+	font-family: 'Smooch';
+
 	position: absolute;
 	left: 0;
 	top: 0;
@@ -7,13 +14,21 @@
 	color: white;
 	text-align: center;
 
-	padding-top: 18vmin;
+	padding-top: 17vmin;
 	font-size: 8vmin;
 
 	text-shadow: 2px 2px 2px #000;
 
 	> div {
 		margin-top: 4vmin;
+
+		& .dingus {
+			margin-left: -1vmin;
+		}
+
+		& .biz {
+			font-size: 9vmin;
+		}
 	}
 }
 
@@ -76,43 +91,11 @@
 			bottom: 0;
 			margin: 0 auto;
 			margin-top: 10vmin;
-			-webkit-mask: linear-gradient(
-				to bottom,
-				#000 10% 15%,
-				transparent 15% 15.25%,
-				#000 15.25% 21%,
-				transparent 21% 21.5%,
-				#000 21.5% 27%,
-				transparent 27% 27.75%,
-				#000 27.75% 33%,
-				transparent 33% 34%,
-				#000 34% 39%,
-				transparent 39% 40.5%,
-				#000 40.5% 44%,
-				transparent 44% 46%,
-				#000 46% 50%,
-				transparent 50% 52%,
-				#000 52% 56%,
-				transparent 56% 58%,
-				#000 58% 62%,
-				transparent 62% 64%,
-				#000 64% 67%,
-				transparent 67% 70%,
-				#000 70% 73%,
-				transparent 73% 76%,
-				#000 76% 79%,
-				transparent 79% 82%,
-				#000 82% 84%,
-				transparent 84% 88%,
-				#000 88% 90%,
-				transparent 90% 94%,
-				#000 94% 95%,
-				transparent 95% 100%
-			);
 		}
 	}
 	& #overlay_sun2,
 	& #overlay_sun3 {
+		opacity: 0.5;
 		filter: blur(5vmin);
 		z-index: 1;
 		transform: scale(1.5);
