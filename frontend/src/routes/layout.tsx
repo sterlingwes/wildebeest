@@ -1,23 +1,26 @@
 import { component$, Slot } from '@builder.io/qwik'
 import { loader$ } from '@builder.io/qwik-city'
-import * as access from 'wildebeest/backend/src/access'
-import { checkAuth } from '~/utils/checkAuth'
 
-type AccessLoaderData = {
-	loginUrl: string
+type AuthLoaderData = {
+	loginUrl: URL
 	isAuthorized: boolean
 }
 
-export const accessLoader = loader$<Promise<AccessLoaderData>>(async ({ platform, request }) => {
-	const isAuthorized = await checkAuth(request, platform)
+export const authLoader = loader$<Promise<AuthLoaderData>>(async ({ platform }) => {
+	const isAuthorized = platform.data.connectedActor !== null
+	// defined in migrations/0010_add_ui_client.sql
+	const UI_CLIENT_ID = '924801be-d211-495d-8cac-e73503413af8'
+	const params = new URLSearchParams({
+		redirect_uri: '/',
+		response_type: 'code',
+		client_id: UI_CLIENT_ID,
+		scope: 'all',
+	})
+	const loginUrl = new URL('/oauth/authorize?' + params, 'https://' + platform.DOMAIN)
 
 	return {
 		isAuthorized,
-		loginUrl: access.generateLoginURL({
-			redirectURL: request.url,
-			domain: platform.ACCESS_AUTH_DOMAIN,
-			aud: platform.ACCESS_AUD,
-		}),
+		loginUrl,
 	}
 })
 

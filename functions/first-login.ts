@@ -7,7 +7,7 @@ import { parse } from 'cookie'
 import * as errors from 'wildebeest/backend/src/errors'
 import * as access from 'wildebeest/backend/src/access'
 import { type Database, getDatabase } from 'wildebeest/backend/src/database'
-import { getJwtEmail } from 'wildebeest/frontend/src/utils/getJwtEmail'
+import { getJwtEmail } from 'wildebeest/backend/src/utils/auth/getJwtEmail'
 
 export const onRequestPost: PagesFunction<Env, any, ContextData> = async ({ request, env }) => {
 	return handlePostRequest(request, await getDatabase(env), env.userKEK, env.ACCESS_AUTH_DOMAIN, env.ACCESS_AUD)
@@ -42,11 +42,11 @@ export async function handlePostRequest(
 	const properties: Record<string, string> = {}
 
 	if (formData.has('username')) {
-		properties.preferredUsername = formData.get('username') || ''
+		properties.preferredUsername = (formData.get('username') as string) || ''
 	}
 
 	if (formData.has('name')) {
-		properties.name = formData.get('name') || ''
+		properties.name = (formData.get('name') as string) || ''
 	}
 
 	await createPerson(domain, db, userKEK, email, properties)

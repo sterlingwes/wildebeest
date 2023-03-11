@@ -25,6 +25,10 @@ const qb: QueryBuilder = {
 	psqlOnly(): string {
 		return ''
 	},
+
+	jsonSet(obj: string, field: string, value: string): string {
+		return `json_set(${obj}, '$.${field}', ${value})`
+	},
 }
 
 export default function make({ DATABASE }: Pick<Env, 'DATABASE'>): Database {

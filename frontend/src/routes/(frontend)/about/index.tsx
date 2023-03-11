@@ -2,18 +2,17 @@ import { component$ } from '@builder.io/qwik'
 import { DocumentHead, loader$ } from '@builder.io/qwik-city'
 import { getDatabase } from 'wildebeest/backend/src/database'
 import { getDomain } from 'wildebeest/backend/src/utils/getDomain'
-import { handleRequestGet as settingsHandleRequestGet } from 'wildebeest/functions/api/wb/settings/server/server'
-import { handleRequestGet as rulesHandleRequestGet } from 'wildebeest/functions/api/v1/instance/rules'
+import { getSettings } from 'wildebeest/backend/src/config/server'
+import { getRules } from 'wildebeest/backend/src/config/rules'
 import { Accordion } from '~/components/Accordion/Accordion'
 import { HtmlContent } from '~/components/HtmlContent/HtmlContent'
-import { ServerSettingsData } from '~/routes/(admin)/settings/server-settings/layout'
 import { Account } from '~/types'
 import { getDocumentHead } from '~/utils/getDocumentHead'
 import { instanceLoader } from '../layout'
-import { getAdmins } from 'wildebeest/functions/api/wb/settings/server/admins'
 import { emailSymbol } from 'wildebeest/backend/src/activitypub/actors'
 import { loadLocalMastodonAccount } from 'wildebeest/backend/src/mastodon/account'
 import { AccountCard } from '~/components/AccountCard/AccountCard'
+import { getAdmins } from 'wildebeest/backend/src/utils/auth/getAdmins'
 
 type AboutInfo = {
 	image: string
@@ -28,25 +27,9 @@ type AboutInfo = {
 export const aboutInfoLoader = loader$<Promise<AboutInfo>>(async ({ resolveValue, request, platform }) => {
 	// TODO: fetching the instance for the thumbnail, but that should be part of the settings
 	const instance = await resolveValue(instanceLoader)
-
 	const database = await getDatabase(platform)
-
-	const brandingDataResp = await settingsHandleRequestGet(database)
-	let brandingData: ServerSettingsData | null
-	try {
-		brandingData = await brandingDataResp.json()
-	} catch {
-		brandingData = null
-	}
-
-	const rulesResp = await rulesHandleRequestGet(database)
-	let rules: { id: number; text: string }[] = []
-	try {
-		rules = await rulesResp.json()
-	} catch {
-		rules = []
-	}
-
+	const brandingData = await getSettings(database)
+	const rules = await getRules(database)
 	const admins = await getAdmins(database)
 	let adminAccount: Account | null = null
 
@@ -84,9 +67,13 @@ export default component$(() => {
 					</h2>
 					<p data-testid="social-text" class="mb-6 text-wildebeest-500">
 						<span>
-							Decentralised social media powered by{' '}
-							<a href="https://joinmastodon.org" class="no-underline text-wildebeest-200 font-semibold" target="_blank">
-								Mastodon
+							Decentralized social network powered by{' '}
+							<a
+								href="https://github.com/cloudflare/wildebeest"
+								class="no-underline text-wildebeest-200 font-semibold"
+								target="_blank"
+							>
+								Wildebeest
 							</a>
 						</span>
 					</p>
@@ -118,10 +105,10 @@ export default component$(() => {
 						<div class="my-1">
 							<Accordion title="Server rules">
 								<ol class="list-none flex flex-col gap-1 my-5 px-6">
-									{aboutInfo.rules.map(({ id, text }) => (
+									{aboutInfo.rules.map(({ id, text }, idx) => (
 										<li key={id} class="flex items-center border-wildebeest-700 border-b last-of-type:border-b-0 py-2">
 											<span class="bg-wildebeest-vibrant-400 text-wildebeest-900 mr-4 my-1 p-4 rounded-full w-5 h-5 grid place-content-center">
-												{id}
+												{idx + 1}
 											</span>
 											<span>{text}</span>
 										</li>
@@ -142,7 +129,7 @@ export const head: DocumentHead = ({ resolveValue, head }) => {
 	return getDocumentHead(
 		{
 			title: `About - ${instance.title}`,
-			description: `About page for the ${instance.title} Mastodon instance`,
+			description: `About page for ${instance.title}`,
 			og: {
 				type: 'website',
 				image: instance.thumbnail,

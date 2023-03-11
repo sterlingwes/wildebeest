@@ -4,7 +4,7 @@ import type { Env } from 'wildebeest/backend/src/types/env'
 
 function sqliteToPsql(query: string): string {
 	let c = 0
-	return query.replaceAll(/\?([0-9])?/g, (match: string, p1: string) => {
+	return query.replace(/\?([0-9])?/g, (match: string, p1: string) => {
 		c += 1
 		return `$${p1 || c}`
 	})
@@ -12,7 +12,7 @@ function sqliteToPsql(query: string): string {
 
 const qb: QueryBuilder = {
 	jsonExtract(obj: string, prop: string): string {
-		return `json_extract_path(${obj}::json, '${prop}')::text`
+		return `jsonb_extract_path(${obj}, '${prop}')::text`
 	},
 
 	jsonExtractIsNull(obj: string, prop: string): string {
@@ -33,6 +33,10 @@ const qb: QueryBuilder = {
 
 	psqlOnly(q: string): string {
 		return q
+	},
+
+	jsonSet(obj: string, field: string, value: string): string {
+		return `jsonb_set(${obj}, '{${field}}', ${value})`
 	},
 }
 
